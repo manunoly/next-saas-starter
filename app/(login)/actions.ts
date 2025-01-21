@@ -15,6 +15,7 @@ import {
   type NewActivityLog,
   ActivityType,
   invitations,
+  menus,
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
@@ -378,6 +379,15 @@ const inviteTeamMemberSchema = z.object({
   email: z.string().email('Invalid email address'),
   role: z.enum(['member', 'owner']),
 });
+
+export const getMenuItem = async () => {
+  const user = await getUser();
+  if (!user) {
+    return { error: 'User not authenticated' };
+  }
+  const menuByRole = await db.select().from(menus).where(eq(menus.role, user.role));
+  return menuByRole;
+}
 
 export const inviteTeamMember = validatedActionWithUser(
   inviteTeamMemberSchema,

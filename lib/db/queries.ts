@@ -1,6 +1,6 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
+import { activityLogs, teamMembers, teams, users, menus, Menu } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -96,7 +96,36 @@ export async function getActivityLogs() {
     .leftJoin(users, eq(activityLogs.userId, users.id))
     .where(eq(activityLogs.userId, user.id))
     .orderBy(desc(activityLogs.timestamp))
-    .limit(10);
+    .limit(100);
+}
+
+
+export async function getMenu(role?: string) {
+  const menuItems = (await db
+    .select()
+    .from(menus)
+    .where(eq(menus.role, role || 'member'))
+    .orderBy(menus.order_number)) as Menu[];
+
+  const menuMap = new Map<number, Menu>();
+  const rootMenu: Menu[] = [];
+
+  for (const item of menuItems) {
+    menuMap.set(item.id, item);
+    if (item.parentId === null) {
+      rootMenu.push(item);
+    } else {
+      const parent = menuMap.get(item.parentId);
+      if (parent) {
+        if (!parent.submenu) {
+          parent.submenu = [];
+        }
+        parent.submenu.push(item);
+      }
+    }
+  }
+
+  return rootMenu;
 }
 
 export async function getTeamForUser(userId: number) {

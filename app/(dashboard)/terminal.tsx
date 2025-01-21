@@ -26,6 +26,7 @@ export function Terminal() {
   }, [terminalStep]);
 
   const copyToClipboard = () => {
+    // navigator.clipboard.writeText('manunoly@gmail.com');       
     navigator.clipboard.writeText(terminalSteps.join('\n'));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
