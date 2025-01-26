@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
 export async function getUser() {
+  try {
   const sessionCookie = (await cookies()).get('session');
   if (!sessionCookie || !sessionCookie.value) {
     return null;
@@ -34,6 +35,18 @@ export async function getUser() {
   }
 
   return user[0];
+} catch (error) {
+  return null;
+}
+}
+
+export async function testPostgresConnection() {
+  try {
+    const data = await db.execute("SELECT NOW()");
+    return !!data;
+  } catch (error) {
+    return false;
+  }
 }
 
 export async function getTeamByStripeCustomerId(customerId: string) {
@@ -101,6 +114,7 @@ export async function getActivityLogs() {
 
 
 export async function getMenu(role?: string) {
+  try {
   const menuItems = (await db
     .select()
     .from(menus)
@@ -126,6 +140,9 @@ export async function getMenu(role?: string) {
   }
 
   return rootMenu;
+} catch (error) {
+  return [];
+}
 }
 
 export async function getTeamForUser(userId: number) {
