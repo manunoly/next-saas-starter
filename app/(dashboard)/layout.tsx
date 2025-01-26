@@ -1,25 +1,22 @@
 import Header from '@/components/ui/header';
 import HeaderSecundary from '@/components/ui/headerSecundary';
-import { getMenu, getUser } from '@/lib/db/queries';
-import { headers } from "next/headers";
+import { getMenu, testPostgresConnection, getUser } from '@/lib/db/queries';
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-
+  let conexion = await testPostgresConnection();
   const user = await getUser();
-  if (user) {
-    const navItems = await getMenu(user.role);
-    return (
-      <section className="flex flex-col min-h-screen">
-        <Header />
-        <HeaderSecundary navItems={navItems} />
-        {children}
-      </section>
-    );
-  }
+ const menu = user ? await getMenu(user?.role) : [];
 
   return (
     <section className="flex flex-col min-h-screen">
-      <Header />
+      {
+        !conexion && (
+          <div className="bg-red-500 text-white text-center h-6">
+            <p>We are experiencing some slowliness in our database connection, please try again.</p>
+          </div>
+        )
+      }
+      <Header navItems={menu} />
       {children}
     </section>
   );

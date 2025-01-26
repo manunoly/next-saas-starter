@@ -14,17 +14,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser } from '@/lib/auth';
 import { signOut } from '@/app/(login)/actions';
 import { useRouter } from 'next/navigation';
-
+import { Menu as MenuI } from '@/lib/db/schema';
+import HeaderSecundary from '@/components/ui/headerSecundary';
 
 interface navItemsInterface {
     href: string;
     label: string;
     icon?: React.ElementType;
     submenu?: navItemsInterface[];
-  }
+}
 
-  
-const Header = () => {
+
+const Header = ({ navItems }: { navItems: MenuI[] }) => {
     const [isMenuOpen, setIsMenuOpen] = useState<string | null>(null);
     const { user, setUser } = useUser();
     const router = useRouter();
@@ -42,6 +43,9 @@ const Header = () => {
                     <span className="ml-2 text-xl font-semibold text-orange-500">X-Core</span>
                     <HandCoinsIcon className="h-6 w-6 text-orange-500" />
                 </Link>
+                <div className="hidden md:flex items-center space-x-4">
+                    <HeaderSecundary navItems={navItems} />
+                </div>
                 <div className="flex items-center space-x-4">
                     <Link
                         href="/pricing"
