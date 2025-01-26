@@ -1,9 +1,9 @@
 import Header from '@/components/ui/header';
 import HeaderSecundary from '@/components/ui/headerSecundary';
-import { getMenu, testPostgresConnection, getUser } from '@/lib/db/queries';
+import { getMenu, testDBConnection, getUser } from '@/lib/db/queries';
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  let conexion = await testPostgresConnection();
+  let conexion = await testDBConnection();
   const user = await getUser();
  const menu = user ? await getMenu(user?.role) : [];
 

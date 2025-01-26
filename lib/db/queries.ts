@@ -40,7 +40,7 @@ export async function getUser() {
 }
 }
 
-export async function testPostgresConnection() {
+export async function testDBConnection() {
   try {
     const data = await db.execute("SELECT NOW()");
     return !!data;
