@@ -82,6 +82,15 @@ export const menus = pgTable('menu', {
   deletedAt: timestamp('deleted_at'),
 });
 
+export const uploads = pgTable('uploads', {
+  id: serial('id').primaryKey(),
+  filename: varchar('filename', { length: 255 }).notNull(),
+  filepath: varchar('filepath', { length: 255 }).notNull(),
+  mimetype: varchar('mimetype', { length: 100 }).notNull(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 export const teamsRelations = relations(teams, ({ many }) => ({
   teamMembers: many(teamMembers),
   activityLogs: many(activityLogs),
@@ -91,6 +100,9 @@ export const teamsRelations = relations(teams, ({ many }) => ({
 export const usersRelations = relations(users, ({ many }) => ({
   teamMembers: many(teamMembers),
   invitationsSent: many(invitations),
+  activityLogs: many(activityLogs),
+  uploads: many(uploads),
+  menus: many(menus),
 }));
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
@@ -154,6 +166,7 @@ export type NewActivityLog = typeof activityLogs.$inferInsert;
 export type Invitation = typeof invitations.$inferSelect;
 export type NewInvitation = typeof invitations.$inferInsert;
 export type Menu = typeof menus.$inferSelect & { submenu: Menu[] };
+export type Upload = typeof uploads.$inferSelect;
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
     user: Pick<User, 'id' | 'name' | 'email'>;

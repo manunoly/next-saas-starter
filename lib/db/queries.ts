@@ -1,6 +1,6 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users, menus, Menu } from './schema';
+import { activityLogs, teamMembers, teams, users, menus, Menu, uploads } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -112,7 +112,6 @@ export async function getActivityLogs() {
     .limit(100);
 }
 
-
 export async function getMenu(role?: string) {
   try {
   const menuItems = (await db
@@ -143,6 +142,14 @@ export async function getMenu(role?: string) {
 } catch (error) {
   return [];
 }
+}
+
+export async function getUploadsForUser(userId: number) {
+  return await db
+    .select()
+    .from(uploads)
+    .where(eq(uploads.userId, userId))
+    .orderBy(desc(uploads.createdAt));
 }
 
 export async function getTeamForUser(userId: number) {
